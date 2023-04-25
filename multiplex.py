@@ -10,7 +10,7 @@ class Mux:
         self.s.append(DigitalInOut(board.GP4))
         self.s.append(DigitalInOut(board.GP3))
         self.s.append(DigitalInOut(board.GP2))
-        self.SIG = analogio.AnalogIn(board.ADC0)
+        self.SIG = analogio.AnalogIn(board.A0)
         self.EN  = DigitalInOut(board.GP6)
 
         #Set the directions of the pins
@@ -44,7 +44,7 @@ class Mux:
 
     def setSelPin(self,select,board):
         try:
-            self.SIG = analogio.AnalogIn(board.ADC0)
+            self.SIG = analogio.AnalogIn(board.A0)
             self.s[select].direction = Direction.INPUT
         except:
             print("The select must be an integer 0-3")
