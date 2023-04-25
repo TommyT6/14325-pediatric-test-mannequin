@@ -14,7 +14,6 @@ class Mux:
         self.EN  = DigitalInOut(board.GP6)
 
         #Set the directions of the pins
-        self.SIG.direction = Direction.INPUT
         self.EN.direction = Direction.OUTPUT
         for i in range(0,4):
             self.s[i].direction = Direction.INPUT
@@ -23,9 +22,8 @@ class Mux:
     def change_sig(self,num):
         bin_num = bin(num)[2:]  # Convert to binary and remove the '0b' prefix
         bin_num = '0' * (4 - len(bin_num)) + bin_num  # Add leading zeros
-        reverse_bin_num = bin_num[::-1]
-
-        for i, bit in enumerate(reverse_bin_num):
+        
+        for i, bit in enumerate(reversed(bin_num)):
             if bit == '1':
                 self.s[3-i].pull = Pull.UP
 
@@ -50,4 +48,5 @@ class Mux:
             self.s[select].direction = Direction.INPUT
         except:
             print("The select must be an integer 0-3")
+
 
