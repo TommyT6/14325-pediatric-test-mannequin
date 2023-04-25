@@ -3,7 +3,7 @@ from digitalio import DigitalInOut, Direction, Pull
 
 #Setting the pins as digital GPIO pins
 
-class mux:
+class Mux:
     def __init__(self):
         self.s = []
         self.s.append(DigitalInOut(board.GP5))
