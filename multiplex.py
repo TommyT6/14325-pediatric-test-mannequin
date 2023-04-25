@@ -1,8 +1,8 @@
-import time
 import board
 from digitalio import DigitalInOut, Direction, Pull
 
 #Setting the pins as digital GPIO pins
+
 class mux:
     def __init__(self):
         self.s = []
@@ -10,7 +10,7 @@ class mux:
         self.s.append(DigitalInOut(board.GP4))
         self.s.append(DigitalInOut(board.GP3))
         self.s.append(DigitalInOut(board.GP2))
-        self.SIG = DigitalInOut(board.GP1)
+        self.SIG = DigitalInOut(board.A0)
         self.EN  = DigitalInOut(board.GP6)
 
         #Set the directions of the pins
@@ -33,3 +33,18 @@ class mux:
 
     def enable_low(self):
         self.EN.pull = Pull.DOWN 
+
+    def setSig(self,board):
+        self.SIG = DigitalInOut(board)
+        self.SIG.direction = Direction.INPUT
+
+    def setEN(self,board):
+        self.EN = DigitalInOut(board)
+        self.EN.direction = Direction.OUTPUT
+
+    def setSelPin(self,select,board):
+        try:
+            self.s[select] = DigitalInOut(board)
+            self.s[select].direction = Direction.INPUT
+        except:
+            print("The select must be an integer 0-3")
