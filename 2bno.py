@@ -1,3 +1,4 @@
+#not used anymore,kept in repository for any potential future reference reasons
 import board
 import busio
 import adafruit_bno055

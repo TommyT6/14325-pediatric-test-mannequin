@@ -7,7 +7,7 @@ import logging
 numOfPicos = 4
 picoCount = 0
 #Change this for max size of messages in bytes
-buffSize = 25
+buffSize = 255
 
 def main():
     global picoCount
@@ -15,13 +15,12 @@ def main():
     server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     #server.setblocking(False)
     host = socket.gethostname()
-    port = 50000
+    port = 5000
     print("Server started")
     print("Now looking for Picos")
 
 
     #establish connection between all clients
-
     server.bind((host,port))
 
     #specify max num of picos to connect to and start accepting connections
@@ -54,13 +53,11 @@ def receive_data(clientsocket,addr):
         #check if data is valid if not skip
         if data != str(): #if valid
             #process_data(addr, data)
-            print("Pico from ", addr[0], "is sending ", data)
-            time.sleep(0.1)
+            print("Pico from ", clientsocket.getpeername()[0], "is sending ", data)
         else:
             #only if connection is broken
             break
 
-        time.sleep(0.1)
     print("Socket from ",str(addr), "closed")
     clientsocket.close()
 
