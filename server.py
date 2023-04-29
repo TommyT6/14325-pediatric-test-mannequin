@@ -1,7 +1,9 @@
 import socket
 import threading
 import time
-import logging
+import pandas as pd
+import datetime
+import numpy as np
 
 #Change this to number of Picos the server should be connected to
 numOfPicos = 4
@@ -41,8 +43,11 @@ def main():
 
 
 #threads that look for messages from clients
+#currently only saves data to a csv once connection to stream is broken, can add keyboard or some other way to save 
+#also only works for a bno data, will need a way to identify which data to save!
 def receive_data(clientsocket,addr):
     close = 0
+    bno_df = pd.DataFrame(columns = ['Time','BNO1_Accel','BNO1_Gyro', 'BNO1_Euler','BNO2_Accel','BNO2_Gyro','BNO2_Euler'])
     while True:
         try:
             data = clientsocket.recv(buffSize)
@@ -52,15 +57,19 @@ def receive_data(clientsocket,addr):
         data = data.decode('utf-8')
         #check if data is valid if not skip
         if data != str(): #if valid
+            now = datetime.now()
             #process_data(addr, data)
+            bno_df = record_data(bno_df,data,now)
             print("Pico from ", clientsocket.getpeername()[0], "is sending ", data)
         else:
             #only if connection is broken
             break
 
     print("Socket from ",str(addr), "closed")
+    bno_df.to_csv("Data/bno.csv")
     clientsocket.close()
 
+#preprocessing data function needs heavy work, need to figure out type of preprocessing to be done first
 def process_data(addr, data):
     if addr == ('172.16.150.144', 62132): #acceleration
         print("Acceleration = ", data)
@@ -73,7 +82,6 @@ def process_data(addr, data):
     elif addr == 5: #Force Scale
         print('Force Scale = ', data)
     else:
-        1+1
         print("Pico from ", addr, " has sent has an invalid classifier, please check the data being sent")
     print(data)
 
@@ -92,5 +100,18 @@ def is_socket_closed(sock: socket.socket) -> bool:
         logger.exception("unexpected exception when checking if a socket is closed")
         return False
     return False
-    
+
+
+def record_data(df,data,time):
+    #need to add if else statements figuring out which data is which
+    #currently this only supports 1 BNO streaming data
+    accel = float(data[1])
+    gyro = float(data[2])
+    euler = float(data[3])
+    if data[0] == "1":
+        df.loc[len(df.index)] = [time,accel,gyro,euler,np.nan,np.nan,np.nan] 
+    elif data[0] == "2":
+        df.loc[len(df.index)] = [time,np.nan,np.nan,np.nan,accel,gyro,euler] 
+    return df
+
 main()
